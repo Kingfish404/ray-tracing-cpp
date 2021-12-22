@@ -1,0 +1,35 @@
+# ide config
+.vscode
+.idea
+.project
+.settings
+.cproject
+.autotools
+
+# build fold
+*/build
+*/cmake-build-debug
+build
+cmake-build-debug
+
+# CMake
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+
+# executables
+*.exe
+*.out
+*.app
+
+# temp file
+*/temp
+*/tmp
+temp
+tmp
