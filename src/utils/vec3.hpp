@@ -1,6 +1,6 @@
 #pragma once
-#ifndef VEC3_H
-#define VEC3_H
+#ifndef VEC3_HPP
+#define VEC3_HPP
 
 #include <cmath>
 #include <iostream>
@@ -25,7 +25,7 @@ public:
     {
         for (int i = 0; i < 3; ++i)
         {
-            e[i] += v.e[i];
+            e[i] += v[i];
         }
         return *this;
     }
@@ -54,7 +54,28 @@ public:
         return e[0] * e[0] + e[1] * e[1] + e[2] * e[2];
     }
 
-public:
+    inline double dot(const vec3 &v) const
+    {
+        auto &u = *this;
+        return (u[0] * v[0] + u[1] * v[1] + u[2] * v[2]);
+    }
+
+    inline vec3 cross(const vec3 &v) const
+    {
+        auto &u = *this;
+        return vec3(u[1] * v[2] - u[2] * v[1],
+                    u[2] * v[0] - u[0] * v[2],
+                    u[0] * v[1] - u[1] * v[0]);
+    }
+
+    /**
+     * @brief Get unit length: [-1.0, 1.0]{3}
+     * 
+     * @return vec3 
+     */
+    inline vec3 unit_vector() const;
+
+private:
     double e[3];
 };
 
@@ -67,27 +88,27 @@ using color = vec3;  // RGB color
 
 inline std::ostream &operator<<(std::ostream &out, const vec3 &v)
 {
-    return out << v.e[0] << ' ' << v.e[1] << ' ' << v.e[2];
+    return out << v[0] << ' ' << v[1] << ' ' << v[2];
 }
 
 inline vec3 operator+(const vec3 &u, const vec3 &v)
 {
-    return vec3(u.e[0] + v.e[0], u.e[1] + v.e[1], u.e[2] + v.e[2]);
+    return vec3(u[0] + v[0], u[1] + v[1], u[2] + v[2]);
 }
 
 inline vec3 operator-(const vec3 &u, const vec3 &v)
 {
-    return vec3(u.e[0] - v.e[0], u.e[1] - v.e[1], u.e[2] - v.e[2]);
+    return vec3(u[0] - v[0], u[1] - v[1], u[2] - v[2]);
 }
 
 inline vec3 operator*(const vec3 &u, const vec3 &v)
 {
-    return vec3(u.e[0] * v.e[0], u.e[1] * v.e[1], u.e[2] * v.e[2]);
+    return vec3(u[0] * v[0], u[1] * v[1], u[2] * v[2]);
 }
 
 inline vec3 operator*(double t, const vec3 &v)
 {
-    return vec3(t * v.e[0], t * v.e[1], t * v.e[2]);
+    return vec3(t * v[0], t * v[1], t * v[2]);
 }
 
 inline vec3 operator*(const vec3 &v, double t)
@@ -100,21 +121,10 @@ inline vec3 operator/(vec3 v, double t)
     return (1 / t) * v;
 }
 
-inline double dot(const vec3 &u, const vec3 &v)
+vec3 vec3::unit_vector() const
 {
-    return u.e[0] * v.e[0] + u.e[1] * v.e[1] + u.e[2] * v.e[2];
-}
-
-inline vec3 cross(const vec3 &u, const vec3 &v)
-{
-    return vec3(u.e[1] * v.e[2] - u.e[2] * v.e[1],
-                u.e[2] * v.e[0] - u.e[0] * v.e[2],
-                u.e[0] * v.e[1] - u.e[1] * v.e[0]);
-}
-
-inline vec3 unit_vector(vec3 v)
-{
+    auto &v = *this;
     return v / v.length();
-}
+};
 
 #endif

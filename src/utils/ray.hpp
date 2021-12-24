@@ -1,6 +1,6 @@
 #pragma once
-#ifndef RAY_H
-#define RAY_H
+#ifndef RAY_HPP
+#define RAY_HPP
 
 #include "vec3.hpp"
 
@@ -18,7 +18,7 @@ public:
         return orig + t * dir;
     }
 
-public:
+private:
     point3 orig;
     vec3 dir;
 };
