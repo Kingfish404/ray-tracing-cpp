@@ -8,9 +8,9 @@
 
 # build fold
 */build
-*/cmake-build-debug
+*/cmake-build-*
 build
-cmake-build-debug
+cmake-build-*
 
 # CMake
 CMakeCache.txt

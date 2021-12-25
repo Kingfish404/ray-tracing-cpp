@@ -1,11 +1,12 @@
 cmake_minimum_required(VERSION 3.20)
 
-set(PROJECT_NAME ray-tracing)
-set(CXX_STANDARD 17)
-set(C_STANDARD 17)
+set(CMAKE_PROJECT_NAME ray-tracing)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_C_STANDARD 17)
 
-project(${PROJECT_NAME})
+project(${CMAKE_PROJECT_NAME})
 
-add_executable(${PROJECT_NAME} 
-    main.cpp
+add_executable(
+        ${CMAKE_PROJECT_NAME}
+        main.cpp
 )
