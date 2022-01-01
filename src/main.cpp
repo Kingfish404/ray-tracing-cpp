@@ -5,15 +5,23 @@
 #include "utils/sphere.hpp"
 
 #include <iostream>
+#include <chrono>
 
-color ray_color(const ray &r, const hittable &world)
+color ray_color(const ray &r, const hittable &world, int depth)
 {
-    hit_record rec;
-    if (world.hit(r, 0, infinity, rec))
+    // If we've exceeded the ray bounce limit, no more light is gathered.
+    if (depth <= 0)
     {
-        return 0.5 * (rec.normal + color(1, 1, 1));
+        return {0, 0, 0};
     }
-    vec3 unit_direction = r.direction().unit_vector();
+
+    hit_record rec;
+    if (world.hit(r, 0.001, infinity, rec))
+    {
+        point3 target = rec.p + vec3::random_in_hemisphere(rec.normal);
+        return 0.5 * ray_color(ray(rec.p, target - rec.p), world, depth - 1);
+    }
+    vec3 unit_direction = vec3::unit_vector(r.direction());
     auto t = 0.5 * (unit_direction.y() + 1.0);
     return (1.0 - t) * color(1.0, 1.0, 1.0) + t * color(0.5, 0.7, 1.0);
 }
@@ -24,7 +32,8 @@ int main()
     const auto aspect_ratio = 16.0 / 9.0;
     const int image_width = 720;
     const int image_height = static_cast<int>(image_width / aspect_ratio);
-    const int samples_per_pixel = 10;
+    const int samples_per_pixel = 100;
+    const int max_depth = 50;
 
     // World
     hittable_list world;
@@ -38,9 +47,12 @@ int main()
     std::cout << "P3\n"
               << image_width << " " << image_height << "\n255\n";
 
+
+    auto start = std::chrono::system_clock::now();
+
     for (int j = image_height - 1; j >= 0; --j)
     {
-        // std::cerr << "\rScanlines remaining: " << j << " " << std::flush;
+        std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
         for (int i = 0; i < image_width; ++i)
         {
             color pixel_color(0, 0, 0);
@@ -49,12 +61,15 @@ int main()
                 auto u = (i + random_double()) / (image_width - 1);
                 auto v = (j + random_double()) / (image_height - 1);
                 ray r = cam.get_ray(u, v);
-                pixel_color += ray_color(r, world);
+                pixel_color += ray_color(r, world, max_depth);
             }
             write_color(std::cout, pixel_color, samples_per_pixel);
         }
     }
-    std::cerr << "\nDone.\n";
 
+    std::cerr << "\nDone.\n";
+    auto end = std::chrono::system_clock::now();
+    std::chrono::duration<double> diff = end - start;
+    std::cerr << "cost:" << diff.count() << "s\n";
     return 0;
 }
