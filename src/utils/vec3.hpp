@@ -16,16 +16,23 @@ public:
     {};
 
     vec3(double e0, double e1, double e2) : e{e0, e1, e2}
-    {}
+    {
+    }
 
     double x() const
-    { return e[0]; }
+    {
+        return e[0];
+    }
 
     double y() const
-    { return e[1]; }
+    {
+        return e[1];
+    }
 
     double z() const
-    { return e[2]; }
+    {
+        return e[2];
+    }
 
     inline static vec3 random()
     {
@@ -65,14 +72,27 @@ public:
         return -in_unit_sphere;
     }
 
+    // Return true if the vector is close to zero in all dimensions.
+    bool near_zero() const
+    {
+        const auto s = 1e-8;
+        return (fabs(e[0]) < s) && (fabs(e[1]) < s) && (fabs(e[2]) < s);
+    }
+
     vec3 operator-() const
-    { return {-e[0], -e[1], -e[2]}; }
+    {
+        return {-e[0], -e[1], -e[2]};
+    }
 
     double operator[](int i) const
-    { return e[i]; }
+    {
+        return e[i];
+    }
 
     double &operator[](int i)
-    { return e[i]; }
+    {
+        return e[i];
+    }
 
     vec3 operator+=(const vec3 &v)
     {
@@ -178,5 +198,10 @@ vec3 vec3::unit_vector(vec3 v)
 {
     return v / v.length();
 };
+
+vec3 reflect(const vec3 &v, const vec3 &n)
+{
+    return v + 2 * (-v.dot(n)) * n;
+}
 
 #endif

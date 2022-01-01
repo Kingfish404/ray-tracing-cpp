@@ -60,5 +60,7 @@ inline double clamp(double x, double min, double max)
 
 #include "utils/ray.hpp"
 #include "utils/vec3.hpp"
+#include "utils/hittable.hpp"
+#include "utils/material.hpp"
 
 #endif

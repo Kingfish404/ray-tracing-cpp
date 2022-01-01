@@ -14,6 +14,9 @@ When Surface Normals and Multiple Objects Down
 When Diffuse Materials Down
 ![](images/1-8.jpeg)
 
+When Matel Down
+![](images/1-9.jpeg)
+
 ---
 ## License
 
