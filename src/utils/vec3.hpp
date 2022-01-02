@@ -12,8 +12,7 @@ using std::sqrt;
 class vec3
 {
 public:
-    vec3() : e{0, 0, 0}
-    {};
+    vec3() : e{0, 0, 0} {};
 
     vec3(double e0, double e1, double e2) : e{e0, e1, e2}
     {
@@ -59,7 +58,7 @@ public:
 
     inline static vec3 random_unit_vector()
     {
-        return unit_vector(random_in_unit_sphere());
+        return random_in_unit_sphere().unit_vector();
     }
 
     inline static vec3 random_in_hemisphere(const vec3 &normal)
@@ -70,6 +69,19 @@ public:
             return in_unit_sphere;
         }
         return -in_unit_sphere;
+    }
+
+    inline static vec3 random_in_unit_disk()
+    {
+        while (true)
+        {
+            auto p = vec3(random_double(-1, 1), random_double(-1, 1), 0);
+            if (p.length_squared() >= 1)
+            {
+                continue;
+            }
+            return p;
+        }
     }
 
     // Return true if the vector is close to zero in all dimensions.
@@ -105,7 +117,7 @@ public:
 
     vec3 &operator*=(const double t)
     {
-        for (double &i: e)
+        for (double &i : e)
         {
             i *= t;
         }
@@ -136,9 +148,9 @@ public:
     inline vec3 cross(const vec3 &v) const
     {
         auto &u = *this;
-        return vec3(u[1] * v[2] - u[2] * v[1],
+        return {u[1] * v[2] - u[2] * v[1],
                     u[2] * v[0] - u[0] * v[2],
-                    u[0] * v[1] - u[1] * v[0]);
+                    u[0] * v[1] - u[1] * v[0]};
     }
 
     /**
@@ -146,7 +158,7 @@ public:
      *
      * @return vec3
      */
-    inline static vec3 unit_vector(vec3);
+    inline vec3 unit_vector();
 
 private:
     double e[3];
@@ -194,14 +206,23 @@ inline vec3 operator/(vec3 v, double t)
     return (1 / t) * v;
 }
 
-vec3 vec3::unit_vector(vec3 v)
+vec3 vec3::unit_vector()
 {
+    vec3 &v = *this;
     return v / v.length();
-};
+}
 
 vec3 reflect(const vec3 &v, const vec3 &n)
 {
     return v + 2 * (-v.dot(n)) * n;
+}
+
+vec3 refract(const vec3 &uv, const vec3 &n, double etai_over_etat)
+{
+    auto cos_theta = fmin((-uv).dot(n), 1.0);
+    vec3 r_out_perp = etai_over_etat * (uv + cos_theta * n);
+    vec3 r_out_parallel = -sqrt(fabs(1.0 - r_out_perp.length_squared())) * n;
+    return r_out_perp + r_out_parallel;
 }
 
 #endif
