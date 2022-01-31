@@ -7,6 +7,9 @@
 
 #include <iostream>
 #include <chrono>
+#include <fstream>
+#include <thread>
+#include <vector>
 
 color ray_color(const ray &r, const hittable &world, int depth)
 {
@@ -122,42 +125,86 @@ int main(int argc, char *argv[])
     const int max_depth = 50;
 
     // World
-    hittable_list world = (argc > 1 && argv[1][1] == 's') ? random_scene() : single_scene();
+    hittable_list world = (argc > 1 && argv[1][0] == 's') ? random_scene() : single_scene();
 
     // Camera
-    point3 lookfrom{13, 2, 3};
+    point3 lookfrom{0, 1, 10};
     point3 lookat{0, 0, 0};
     vec3 vup(0, 1, 0);
     auto dist_to_focus = 10.0;
     auto aperture = 0.1;
     camera cam(lookfrom, lookat, vup, 20, aspect_ratio, aperture, dist_to_focus);
 
-    // Render
-    std::cout << "P3\n"
-              << image_width << " " << image_height << "\n255\n";
-
-    auto start = std::chrono::system_clock::now();
-
-    for (int j = image_height - 1; j >= 0; --j)
+    // Output and profile setting
+    auto num_thr = 4;
+    auto num_remaining = image_height;
+    auto ***out = new unsigned int **[image_height];
+    for (int i = 0; i < image_width; i++)
     {
-        std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
-        for (int i = 0; i < image_width; ++i)
+        out[i] = new unsigned int *[image_width];
+        for (int j = 0; j < image_width; j++)
         {
-            color pixel_color(0, 0, 0);
-            for (int s = 0; s < samples_per_pixel; ++s)
-            {
-                auto u = (i + random_double()) / (image_width - 1);
-                auto v = (j + random_double()) / (image_height - 1);
-                ray r = cam.get_ray(u, v);
-                pixel_color += ray_color(r, world, max_depth);
-            }
-            write_color(std::cout, pixel_color, samples_per_pixel);
+            out[i][j] = new unsigned int[3];
         }
     }
 
-    std::cerr << "\nDone.\n";
+    auto start = std::chrono::system_clock::now();
+
+    // Multi thread render
+    std::vector<std::shared_ptr<std::thread>> threads;
+    for (int t = 0; t < num_thr; t++)
+    {
+        auto thr = make_shared<std::thread>(
+            [&, t]()
+            {
+                int start_height = t * (image_height / num_thr);
+                int end_height = start_height + (image_height / num_thr);
+                for (int i = start_height; i < end_height && i < image_height; i++)
+                {
+                    std::cout << "\rScanlines remaining: "
+                              << ((double)num_remaining--) / image_height
+                              << "% " << std::flush;
+                    for (int j = 0; j < image_width; ++j)
+                    {
+                        color pixel_color(0, 0, 0);
+                        for (int s = 0; s < samples_per_pixel; ++s)
+                        {
+                            auto u = (j + random_double()) / (image_width - 1);
+                            auto v = (i + random_double()) / (image_height - 1);
+                            ray r = cam.get_ray(u, v);
+                            pixel_color += ray_color(r, world, max_depth);
+                        }
+                        write_color(out[i][j], pixel_color, samples_per_pixel);
+                    }
+                }
+            });
+        threads.push_back(thr);
+    }
+
+    for (auto thr : threads)
+    {
+        thr->join();
+    }
+
+    // Output to file
+    std::ofstream file;
+    file.open("image.ppm", std::ios::out);
+    file << "P3\n"
+         << image_width << " " << image_height << "\n255\n";
+    for (int i = image_height - 1; i >= 0; i--)
+    {
+        for (int j = 0; j < image_width; j++)
+        {
+            file << out[i][j][0] << " "
+                 << out[i][j][1] << " "
+                 << out[i][j][2] << "\n";
+            delete[] out[i][j];
+        }
+        delete[] out[i];
+    }
+    file.close();
+
     auto end = std::chrono::system_clock::now();
-    std::chrono::duration<double> diff = end - start;
-    std::cerr << "cost:" << diff.count() << "s\n";
+    std::cout << "\nDone. time cost: " << ((std::chrono::duration<double>)(end - start)).count() << "s\n";
     return 0;
 }

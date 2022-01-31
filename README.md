@@ -5,15 +5,9 @@
 ## Run
 
 ```shell
-# command tested pass in macOS 12.1 [MBP13 2020 Intel]
-
-mkdir build && cd build             # get into base build dir
-
-cmake ../src && cmake --build .     # cmake configure and build
-
-./ray-tracing > image.ppm           # run code and wait for long.
-./ray-tracing s > image.ppm         # run code and wait for little.
-
+# command tested pass in macOS 12.2 [MBP13 2020 Intel]
+./run-unix.sh           # run code and wait for long.
+./run-unix.sh s         # run code and wait for little.
 # the output image is ./build/image.ppm
 ```
 
@@ -35,12 +29,13 @@ Final Render (may cost lots of time)
 
 ## Different
 
+- Parallelism speed up, 4 thread speed up 2x+.
 - Functional Programming support.
 - Code base on C++17.
 
 ## Next Plan
 
-- [ ] Parallelism speed up.
+- [ ] The next [week](https://raytracing.github.io/books/RayTracingTheNextWeek.html).
 - [ ] Camera controler add.
 - [ ] Web preview support by wasm.
 
