@@ -2,8 +2,6 @@
 #ifndef VEC3_HPP
 #define VEC3_HPP
 
-#include "../common.hpp"
-
 #include <cmath>
 #include <iostream>
 

@@ -6,8 +6,8 @@
 
 ```shell
 # command tested pass in macOS 12.2 [MBP13 2020 Intel]
-./run-unix.sh           # run code and wait for long.
-./run-unix.sh s         # run code and wait for little.
+make run                # run code and wait for long.
+make run mode=s         # run code and wait for little.
 # the output image is ./build/image.ppm
 ```
 

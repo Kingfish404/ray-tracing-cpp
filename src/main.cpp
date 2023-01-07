@@ -1,7 +1,7 @@
 #include "common.hpp"
 #include "camera.hpp"
 #include "utils/color.hpp"
-#include "utils/hittable_list.hpp"
+#include "utils/hittable.hpp"
 #include "utils/sphere.hpp"
 #include "utils/material.hpp"
 
@@ -125,7 +125,7 @@ int main(int argc, char *argv[])
     const int max_depth = 50;
 
     // World
-    hittable_list world = (argc > 1 && argv[1][0] == 's') ? random_scene() : single_scene();
+    hittable_list world = (argc > 1 && argv[1][0] == 's') ? single_scene() : random_scene();
 
     // Camera
     point3 lookfrom{0, 1, 10};
@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
     camera cam(lookfrom, lookat, vup, 20, aspect_ratio, aperture, dist_to_focus);
 
     // Output and profile setting
-    auto num_thr = 4;
+    auto num_thr = 1;
     auto num_remaining = image_height;
     auto ***out = new unsigned int **[image_height];
     for (int i = 0; i < image_width; i++)
@@ -200,7 +200,6 @@ int main(int argc, char *argv[])
                  << out[i][j][2] << "\n";
             delete[] out[i][j];
         }
-        delete[] out[i];
     }
     file.close();
 

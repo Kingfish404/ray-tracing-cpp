@@ -1,8 +1,7 @@
 /**
  * @file common.hpp
- * @author Jin Yu (jin-yu@acm.org)
- * @brief Named `rtweekend.h` in source of raytracing class
- * 
+ * @author Jin Yu (lambda.jinyu@gmail.com)
+ *
  */
 
 #pragma once
@@ -59,8 +58,8 @@ inline double clamp(double x, double min, double max)
 
 // Common Headers
 
-#include "utils/ray.hpp"
 #include "utils/vec3.hpp"
+#include "utils/ray.hpp"
 #include "utils/hittable.hpp"
 #include "utils/material.hpp"
 

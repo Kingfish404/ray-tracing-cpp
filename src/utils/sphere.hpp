@@ -2,8 +2,7 @@
 #ifndef SPHERE_HPP
 #define SPHERE_HPP
 
-#include "hittable.hpp"
-#include "vec3.hpp"
+#include "../common.hpp"
 
 class sphere : public hittable
 {

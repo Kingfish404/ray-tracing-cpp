@@ -2,7 +2,6 @@
 #ifndef COLOR_HPP
 #define COLOR_HPP
 
-#include "vec3.hpp"
 #include "../common.hpp"
 
 #include <iostream>
